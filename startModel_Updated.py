@@ -86,7 +86,9 @@ config.read(get_main_config_path(), encoding='utf-8')
 
 # ==================== Config File Path ====================
 
-FS_DIRECT_PATH = str(config.get('FileSystem', 'DIRECT_PATH', fallback=""))
+FS_DIRECT_PATH = str(config.get('FileIn', 'DIRECT_PATH', fallback=""))
+
+FS_Out_DIRECT_PATH = str(config.get('FileOut', 'DIRECT_PATH', fallback=""))
 
 ERROR_FOLDER=str(config.get('ERROR_FOLDER', 'DIRECT_PATH', fallback=""))
 
@@ -300,35 +302,9 @@ def transfer_to_error_folder(image_path, json_path, source_folder_path, error_fo
         # Don't raise here to avoid cascading errors
 
 
-def migrate_all_folders(root_path):
-        """Migrate all folders to destination and delete source"""
-        for folder_name in os.listdir(root_path):
-            folder_path = os.path.join(root_path, folder_name)
-
-            if not os.path.isdir(folder_path):
-                continue
-
-            # Find JSON file
-            json_files = [f for f in os.listdir(folder_path) if f.endswith('.json')]
-            if not json_files:
-                print(f"No JSON in {folder_name}, skipping")
-                continue
-
-            # Read camera_id
-            with open(os.path.join(folder_path, json_files[0]), 'r') as f:
-                camera_id = json.load(f).get('SerialNumber', '')
-
-            # Copy and delete
-            try:
-                copy_results_to_destination_updated(folder_path, folder_name, camera_id)
-                shutil.rmtree(folder_path)
-                print(f"Processed: {folder_name}")
-            except Exception as e:
-                print(f"Error with {folder_name}: {e}")
-
 if __name__ == '__main__':
 
-    # migrate_all_folders(FS_DIRECT_PATH)
+
     while True:
             files = os.listdir(FS_DIRECT_PATH)
 

@@ -205,8 +205,15 @@ def copy_results_to_destination_updated(source_folder_path, sample_id, camera_id
     # Create destination folder (including all parent directories)
     os.makedirs(dest_path, exist_ok=True)
 
-    # Copy entire sample folder contents
+    # Copy sample folder contents, skipping intermediate images
     for item in os.listdir(source_folder_path):
+        # Skip intermediate images: even_lighting_*, base_image_*, final_*, *_mask.*
+        if (item.startswith("even_lighting_") or
+            item.startswith(f"base_image_{sample_id}") or
+            item.startswith(f"final_{sample_id}") or
+            item.startswith(f"{sample_id}_mask")):
+            continue
+
         source_item = os.path.join(source_folder_path, item)
         dest_item = os.path.join(dest_path, item)
 
